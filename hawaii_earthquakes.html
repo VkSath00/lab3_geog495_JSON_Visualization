@@ -2,7 +2,7 @@
 <html lang="en-US">
  <head>
         <meta charset="utf-8">
-        <title>Earthquake List</title>
+        <title>Hawaiian Earthquakes</title>
         <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
         <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
         <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
@@ -45,14 +45,20 @@ td {
 tr:nth-child(even) {
     background-color: #f2f2f2;
 }
+@media screen and (max-width: 1024px) {
+#side-panel{
+    display: none;
+}
+}
         </style>
 </head>
 
 <body>
     <main id="container">
+        <div id="map"></div>
         <div id="side-panel">
 
-            <h2>Earthquake List</h2>
+            <h2>Hawaiian Earthquakes</h2>
             <button>Sort by Magnitude</button>
 
             <table>
@@ -64,7 +70,7 @@ tr:nth-child(even) {
             </table>
 
         </div>
-        <div id="map"></div>
+        
 
     </main>
     <script>
@@ -75,20 +81,20 @@ tr:nth-child(even) {
         // define the map object
         let map = new mapboxgl.Map({
             container: 'map', // container ID
-            style: 'mapbox://styles/mapbox/satellite-v9', // style URL
-            zoom: 5.5, // starting zoom
-            center: [138, 38] // starting center
+            style: 'mapbox://styles/mapbox/navigation-night-v1', // style URL
+            zoom: 6.5, // starting zoom
+            center: [-155, 19] // starting center
         });
 
 
 
         async function geojsonFetch() {
 
-            let response, earthquakes, japan, table;
-            response = await fetch('assets/earthquakes.geojson');
+            let response, earthquakes, hawaii, table;
+            response = await fetch('assets/hawaii_earthquakes.geojson');
             earthquakes = await response.json();
-            response = await fetch('assets/japan.json');
-            japan = await response.json();
+            response = await fetch('assets/hawaii.geojson');
+            hawaii = await response.json();
 
             table = document.getElementsByTagName("table")[0];
             let row, cell1, cell2, cell3;
@@ -126,15 +132,15 @@ tr:nth-child(even) {
                 });
 
 
-                map.addSource('japan', {
+                map.addSource('hawaii', {
                     type: 'geojson',
-                    data: japan
+                    data: hawaii
                 });
 
                 map.addLayer({
-                    'id': 'japan-layer',
+                    'id': 'hawaii-layer',
                     'type': 'fill',
-                    'source': 'japan',
+                    'source': 'hawaii',
                     'paint': {
                         'fill-color': '#0080ff', // blue color fill
                         'fill-opacity': 0.5
@@ -147,12 +153,13 @@ tr:nth-child(even) {
 
         geojsonFetch();
 
-        let btn = document.getElementsByTagName("button")[0];
+        let btn = document.getElementsByTagName("button")[1];
 
         btn.addEventListener('click', sortTable);
 
         // define the function to sort table
         function sortTable(e) {
+            console.log("function is running");
             let table, rows, switching, i, x, y, shouldSwitch;
             table = document.getElementsByTagName("table")[0];
             switching = true;
